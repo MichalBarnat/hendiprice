@@ -1,0 +1,52 @@
+<!DOCTYPE html>
+<html lang="pl">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Hendi Price Generator</title>
+    <style>
+        body { font-family: Arial, sans-serif; text-align: center; margin-top: 50px; }
+        input, button { margin: 10px; padding: 10px; }
+    </style>
+</head>
+<body>
+
+<h2>Załaduj plik XML</h2>
+<input type="file" id="fileInput">
+<button onclick="uploadFile()">GENERUJ</button>
+
+<p id="message"></p>
+<a id="downloadLink" style="display:none;" download>📥 Pobierz plik CSV</a>
+
+<script>
+    function uploadFile() {
+        let fileInput = document.getElementById("fileInput");
+        let message = document.getElementById("message");
+        let downloadLink = document.getElementById("downloadLink");
+
+        if (!fileInput.files.length) {
+            alert("Wybierz plik!");
+            return;
+        }
+
+        let file = fileInput.files[0];
+        let formData = new FormData();
+        formData.append("file", file);
+
+        fetch("/api/upload", { method: "POST", body: formData })
+            .then(response => response.text())
+            .then(data => {
+                message.innerText = "Plik przetworzony!";
+                downloadLink.href = data;
+                downloadLink.style.display = "block";
+                downloadLink.innerText = "📥 Pobierz plik CSV";
+            })
+            .catch(error => {
+                message.innerText = "Błąd podczas przesyłania pliku.";
+                console.error("Błąd:", error);
+            });
+    }
+</script>
+
+</body>
+</html>
